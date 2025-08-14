@@ -1,6 +1,9 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
+import { Skeleton } from "@/components/ui/skeleton";
+import { AlertTriangle } from "lucide-react";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 interface Cliente {
   _id: string;
@@ -54,9 +57,11 @@ interface CupomRow {
 
 interface CupomTableProps {
   compras: Compra[];
+  isLoading?: boolean;
+  error?: Error | null;
 }
 
-const CupomTable = ({ compras }: CupomTableProps) => {
+const CupomTable = ({ compras, isLoading, error }: CupomTableProps) => {
   // Transform data to show one row per coupon
   const cupomRows: CupomRow[] = compras.flatMap(compra => 
     compra.cupons.map(cupom => ({
@@ -100,6 +105,15 @@ const CupomTable = ({ compras }: CupomTableProps) => {
         </CardTitle>
       </CardHeader>
       <CardContent>
+        {error && (
+          <Alert variant="destructive" className="mb-4">
+            <AlertTriangle className="h-4 w-4" />
+            <AlertDescription>
+              Erro ao carregar os dados: {error.message}
+            </AlertDescription>
+          </Alert>
+        )}
+        
         <div className="overflow-x-auto">
           <Table>
             <TableHeader>
@@ -118,44 +132,63 @@ const CupomTable = ({ compras }: CupomTableProps) => {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {cupomRows.map((row, index) => (
-                <TableRow 
-                  key={`${row.compraId}-${row.cupom._id}`}
-                  className="hover:bg-muted/50 transition-colors"
-                >
-                  <TableCell>
-                    <Badge variant="outline" className="font-mono">
-                      {row.cupom.numero}
-                    </Badge>
-                  </TableCell>
-                  <TableCell className="font-medium">{row.cliente.nome}</TableCell>
-                  <TableCell className="font-mono text-sm">
-                    {formatCpfCnpj(row.cliente.cpf_cnpj)}
-                  </TableCell>
-                  <TableCell className="font-mono text-sm">{row.cliente.telefone}</TableCell>
-                  <TableCell className="text-sm">{row.cliente.email}</TableCell>
-                  <TableCell className="font-medium">{row.loja.nome}</TableCell>
-                  <TableCell>{row.cidade}</TableCell>
-                  <TableCell>
-                    <Badge variant="secondary">{row.estado}</Badge>
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex flex-wrap gap-1">
-                      {row.produtos.map(produto => (
-                        <Badge key={produto._id} variant="outline" className="text-xs">
-                          {produto.nome}
-                        </Badge>
-                      ))}
-                    </div>
-                  </TableCell>
-                  <TableCell className="font-semibold text-accent">
-                    {formatCurrency(row.valor)}
-                  </TableCell>
-                  <TableCell className="text-sm text-muted-foreground">
-                    {formatDate(row.data)}
+              {isLoading ? (
+                // Loading skeleton
+                Array.from({ length: 5 }).map((_, index) => (
+                  <TableRow key={index}>
+                    {Array.from({ length: 11 }).map((_, cellIndex) => (
+                      <TableCell key={cellIndex}>
+                        <Skeleton className="h-4 w-full" />
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                ))
+              ) : cupomRows.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={11} className="text-center py-8 text-muted-foreground">
+                    Nenhum cupom encontrado
                   </TableCell>
                 </TableRow>
-              ))}
+              ) : (
+                cupomRows.map((row, index) => (
+                  <TableRow 
+                    key={`${row.compraId}-${row.cupom._id}`}
+                    className="hover:bg-muted/50 transition-colors"
+                  >
+                    <TableCell>
+                      <Badge variant="outline" className="font-mono">
+                        {row.cupom.numero}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="font-medium">{row.cliente.nome}</TableCell>
+                    <TableCell className="font-mono text-sm">
+                      {formatCpfCnpj(row.cliente.cpf_cnpj)}
+                    </TableCell>
+                    <TableCell className="font-mono text-sm">{row.cliente.telefone}</TableCell>
+                    <TableCell className="text-sm">{row.cliente.email}</TableCell>
+                    <TableCell className="font-medium">{row.loja.nome}</TableCell>
+                    <TableCell>{row.cidade}</TableCell>
+                    <TableCell>
+                      <Badge variant="secondary">{row.estado}</Badge>
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex flex-wrap gap-1">
+                        {row.produtos.map(produto => (
+                          <Badge key={produto._id} variant="outline" className="text-xs">
+                            {produto.nome}
+                          </Badge>
+                        ))}
+                      </div>
+                    </TableCell>
+                    <TableCell className="font-semibold text-accent">
+                      {formatCurrency(row.valor)}
+                    </TableCell>
+                    <TableCell className="text-sm text-muted-foreground">
+                      {formatDate(row.data)}
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
             </TableBody>
           </Table>
         </div>
