@@ -6,6 +6,9 @@ import { useState } from "react";
 
 interface FilterBarProps {
   onFilterChange: (filters: FilterState) => void;
+  lojas: any[];
+  estados: any[];
+  cidades: any[];
 }
 
 export interface FilterState {
@@ -17,7 +20,7 @@ export interface FilterState {
   dataFim: string;
 }
 
-const FilterBar = ({ onFilterChange }: FilterBarProps) => {
+const FilterBar = ({ onFilterChange, lojas, estados, cidades }: FilterBarProps) => {
   const [filters, setFilters] = useState<FilterState>({
     cidade: "",
     estado: "",
@@ -28,7 +31,13 @@ const FilterBar = ({ onFilterChange }: FilterBarProps) => {
   });
 
   const handleFilterChange = (key: keyof FilterState, value: string) => {
-    const newFilters = { ...filters, [key]: value };
+    let newFilters = { ...filters, [key]: value };
+
+    // Resetar cidade se estado mudar
+    if (key === "estado") {
+      newFilters = { ...newFilters, cidade: "" };
+    }
+
     setFilters(newFilters);
     onFilterChange(newFilters);
   };
@@ -68,32 +77,43 @@ const FilterBar = ({ onFilterChange }: FilterBarProps) => {
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
-          <div className="space-y-2">
-            <label className="text-sm font-medium text-foreground">Cidade</label>
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input
-                placeholder="Filtrar por cidade"
-                value={filters.cidade}
-                onChange={(e) => handleFilterChange("cidade", e.target.value)}
-                className="pl-9"
-              />
-            </div>
-          </div>
-
+          
+          {/* Estado */}
           <div className="space-y-2">
             <label className="text-sm font-medium text-foreground">Estado</label>
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input
-                placeholder="Filtrar por estado"
-                value={filters.estado}
-                onChange={(e) => handleFilterChange("estado", e.target.value)}
-                className="pl-9"
-              />
-            </div>
+            <select
+              value={filters.estado}
+              onChange={(e) => handleFilterChange("estado", e.target.value)}
+              className="w-full border rounded-md px-3 py-2 bg-background"
+            >
+              <option value="">Todos os estados</option>
+              {estados.map((estado) => (
+                <option key={estado.id} value={estado.id}>
+                  {estado.nome}
+                </option>
+              ))}
+            </select>
           </div>
 
+          {/* Cidade */}
+          <div className="space-y-2">
+            <label className="text-sm font-medium text-foreground">Cidade</label>
+            <select
+              value={filters.cidade}
+              onChange={(e) => handleFilterChange("cidade", e.target.value)}
+              disabled={!filters.estado}
+              className="w-full border rounded-md px-3 py-2 bg-background disabled:opacity-50"
+            >
+              <option value="">Todas as cidades</option>
+              {cidades.map((cidade) => (
+                <option key={cidade.id} value={cidade.nome}>
+                  {cidade.nome}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Cupom */}
           <div className="space-y-2">
             <label className="text-sm font-medium text-foreground">Cupom</label>
             <div className="relative">
@@ -107,19 +127,24 @@ const FilterBar = ({ onFilterChange }: FilterBarProps) => {
             </div>
           </div>
 
+          {/* Loja */}
           <div className="space-y-2">
             <label className="text-sm font-medium text-foreground">Loja</label>
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input
-                placeholder="Nome da loja"
-                value={filters.loja}
-                onChange={(e) => handleFilterChange("loja", e.target.value)}
-                className="pl-9"
-              />
-            </div>
+            <select
+              value={filters.loja}
+              onChange={(e) => handleFilterChange("loja", e.target.value)}
+              className="w-full border rounded-md px-3 py-2 bg-background"
+            >
+              <option value="">Todas as lojas</option>
+              {lojas.map((loja) => (
+                <option key={loja._id} value={loja._id}>
+                  {loja.nome}
+                </option>
+              ))}
+            </select>
           </div>
 
+          {/* Data início */}
           <div className="space-y-2">
             <label className="text-sm font-medium text-foreground">Data Início</label>
             <Input
@@ -129,6 +154,7 @@ const FilterBar = ({ onFilterChange }: FilterBarProps) => {
             />
           </div>
 
+          {/* Data fim */}
           <div className="space-y-2">
             <label className="text-sm font-medium text-foreground">Data Fim</label>
             <Input

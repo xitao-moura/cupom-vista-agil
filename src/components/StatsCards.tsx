@@ -18,11 +18,16 @@ interface StatsCardsProps {
   compras: Compra[];
 }
 
-const StatsCards = ({ compras }: StatsCardsProps) => {
-  const totalCupons = compras.reduce((acc, compra) => acc + compra.cupons.length, 0);
-  const clientesUnicos = new Set(compras.map(compra => compra.cliente._id)).size;
-  const lojasUnicas = new Set(compras.map(compra => compra.loja._id)).size;
-  const valorTotal = compras.reduce((acc, compra) => acc + compra.valor, 0);
+const StatsCards = ({ compras }: any) => {
+  console.log(compras)
+  // const totalCupons = compras.reduce((acc, compra) => acc + compra.cupons.length, 0);
+  // const clientesUnicos = new Set(compras.map(compra => compra.cliente._id)).size;
+  // const lojasUnicas = new Set(compras.map(compra => compra.loja._id)).size;
+  // const valorTotal = compras.reduce((acc, compra) => acc + compra.valor, 0);
+  const totalCupons = compras.stats.totalCupons
+  const clientesUnicos = compras.stats.quantidadeClientesUnicos
+  const lojasUnicas = compras.stats.quantidadeLojas
+  const valorTotal = compras.stats.valorTotal
 
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('pt-BR', {
