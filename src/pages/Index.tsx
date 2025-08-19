@@ -50,7 +50,7 @@ const Index = () => {
   useEffect(() => {
     const fetchLojas = async () => {
       try {
-        const res = await fetch("https://api.geradorcupom.gnis.com.br/v1/lojas");
+        const res = await fetch("https://api.geradorcupom.gnis.com.br/v1/lojas"); 
         const json = await res.json();
         setLojas(json || []);
       } catch (err) {
@@ -120,7 +120,7 @@ const Index = () => {
         if (filters.dataInicio) params.append('dataInicio', filters.dataInicio);
         if (filters.dataFim) params.append('dataFim', filters.dataFim);
 
-        const url = `https://api.geradorcupom.gnis.com.br/v1/compras/export?${params.toString()}`;
+        const url = `https://api.geradorcupom.gnis.com.br/v1/compras/export?${params.toString()}`; 
 
         // 2. Fazer a requisição GET
         const res = await fetch(url, {

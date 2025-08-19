@@ -57,7 +57,7 @@ const buildQueryString = (filters: FilterState, page: number) => {
 const fetchCompras = async (filters: FilterState, page: number): Promise<ApiResponse> => {
   const queryString = buildQueryString(filters, page);
   // const url = `https://https://api.geradorcupom.gnis.com.br/v1/compras?${queryString}`;
-  const url = `https://api.geradorcupom.gnis.com.br/v1/compras?${queryString}`;
+  const url = `https://api.geradorcupom.gnis.com.br/v1/compras?${queryString}`; 
   
   const response = await fetch(url);
   
