@@ -85,7 +85,9 @@ const CupomTable = ({ compras, isLoading, error }: CupomTableProps) => {
   };
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('pt-BR');
+    return new Date(dateString).toLocaleDateString('pt-BR', {
+      timeZone: 'America/Sao_Paulo'
+    });
   };
 
   const formatCpfCnpj = (cpfCnpj: string) => {
